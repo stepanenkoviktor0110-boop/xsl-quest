@@ -6,7 +6,11 @@
       "Bash(netstat:*)",
       "Bash(findstr:*)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: XSL Quest - генератор тестов из Excel\n\nОсновные возможности:\n- Backend на Node.js + Express с модульной архитектурой\n- Парсинг Excel файлов и генерация тестов\n- Frontend на Vanilla JS с адаптивным дизайном\n- Docker контейнеризация\n- Готовность к развертыванию (Render, Railway, VPS)\n\n🤖 Generated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git config:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
