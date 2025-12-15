@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Улучшенные мета-теги для адаптивности -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0"
+    />
+    <meta name="HandheldFriendly" content="true" />
+    <meta name="MobileOptimized" content="width" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta name="theme-color" content="#8a9bb3" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
+    <!-- Для iOS -->
+    <link
+      rel="apple-touch-icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>"
+    />
+    <meta name="apple-mobile-web-app-title" content="Генератор тестов" />
+
+    <!-- Для Android -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>Генератор тестов из Excel</title>
+    <style>
+      /* Стили для экранов */
+      .screen {
+        display: none;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .screen.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Улучшаем кнопку возврата */
+      #backButton {
+        background: linear-gradient(135deg, #8a9bb3 0%, #6a7b93 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      #backButton:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(106, 123, 147, 0.3);
+      }
+
+      /* Темная тема для кнопки возврата */
+      @media (prefers-color-scheme: dark) {
+        #backButton {
+          background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+        }
+
+        #backButton:hover {
+          box-shadow: 0 4px 12px rgba(74, 85, 104, 0.3);
+        }
+      }
+
+      /* Адаптивность для кнопки возврата */
+      @media (max-width: 768px) {
+        #backButton {
+          padding: 10px 16px;
+          font-size: 14px;
+          margin-top: 10px;
+        }
+
+        .screen.active {
+          padding-top: 10px;
+        }
+      }
+
+      /* Информационная панель в тесте */
+      #resultSection > div:first-child {
+        margin-bottom: 25px;
+        padding: 20px;
+        background: linear-gradient(
+          135deg,
+          rgba(138, 155, 179, 0.1) 0%,
+          rgba(212, 180, 131, 0.05) 100%
+        );
+        border-radius: 12px;
+        border-left: 4px solid #8a9bb3;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #resultSection > div:first-child {
+          background: linear-gradient(
+            135deg,
+            rgba(74, 85, 104, 0.2) 0%,
+            rgba(45, 55, 72, 0.1) 100%
+          );
+          border-left-color: #4a5568;
+        }
+      }
+
+      /* Базовые стили */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #1a2b3c; /* Pantone 2025: Deep Teal (глубокий сине-зеленый) */
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        min-height: 100vh;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      header {
+        background: linear-gradient(
+          135deg,
+          #6a7b93 0%,
+          #8a9bb3 100%
+        ); /* Pantone 2025: Misty Blue */
+        color: white;
+        padding: 25px;
+        text-align: center;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 20px rgba(106, 123, 147, 0.2);
+      }
+
+      .upload-section,
+      .result-section {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+        border: 1px solid rgba(212, 180, 131, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .upload-section:hover,
+      .result-section:hover {
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+      }
+
+      button {
+        background: linear-gradient(
+          135deg,
+          #d4b483 0%,
+          #c19d6b 100%
+        ); /* Pantone 2025: Peach Pink персиково-розовый */
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        font-size: 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(212, 180, 131, 0.3);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 10px;
+        }
+
+        h1 {
+          font-size: 1.8rem;
+        }
+
+        .upload-section,
+        .result-section {
+          padding: 20px;
+        }
+      }
+
+      /* Новые улучшения для всего приложения */
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        background: linear-gradient(
+          135deg,
+          #ffffff 0%,
+          #d4b483 50%,
+          #8a9bb3 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 700;
+      }
+
+      h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid rgba(212, 180, 131, 0.3);
+      }
+
+      p {
+        color: #4a5568;
+        margin-bottom: 15px;
+      }
+
+      /* Улучшаем чекбоксы */
+      .option-item {
+        margin: 10px 0;
+        padding: 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+      }
+
+      .option-item:hover {
+        border-color: #8a9bb3;
+        transform: translateX(5px);
+      }
+
+      .option-item input[type="checkbox"]:checked ~ span {
+        color: #2c3e50;
+        font-weight: 600;
+      }
+
+      .option-item input[type="checkbox"]:checked ~ .option-item {
+        border-color: #d4b483;
+        background-color: rgba(212, 180, 131, 0.1);
+      }
+
+      /* Улучшаем индикатор загрузки */
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 30px;
+        color: #8a9bb3;
+      }
+
+      .loading:before {
+        content: "";
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+        border: 3px solid rgba(138, 155, 179, 0.3);
+        border-radius: 50%;
+        border-top-color: #8a9bb3;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Улучшаем ошибки */
+      .error {
+        color: #c53030;
+        padding: 15px;
+        background-color: #fff5f5;
+        border-radius: 8px;
+        margin-top: 15px;
+        display: none;
+        border-left: 4px solid #c53030;
+      }
+
+      /* Темная тема для ошибки */
+      @media (prefers-color-scheme: dark) {
+        .error {
+          background-color: #2d3748;
+          color: #fc8181;
+          border-left-color: #fc8181;
+        }
+
+        h2 {
+          color: #e2e8f0;
+          border-bottom-color: #4a5568;
+        }
+
+        p {
+          color: #a0aec0;
+        }
+      }
+
+      /* Улучшения для мобильных устройств */
+      @media (max-width: 480px) {
+        /* Уменьшаем отступы на очень маленьких экранах */
+        .container {
+          padding: 10px;
+        }
+
+        h1 {
+          font-size: 1.8rem;
+        }
+
+        h2 {
+          font-size: 1.4rem;
+        }
+
+        /* Улучшаем кнопки для касания */
+        button,
+        input[type="file"] {
+          padding: 15px;
+          font-size: 16px; /* Предотвращает масштабирование в iOS */
+        }
+
+        /* Увеличиваем область касания для чекбоксов */
+        .option-item {
+          padding: 15px !important;
+          margin: 12px 0 !important;
+        }
+
+        .option-item label {
+          font-size: 16px;
+        }
+
+        /* Улучшаем навигацию */
+        .navigation button {
+          padding: 12px 15px;
+          font-size: 16px;
+          width: 48%;
+        }
+
+        /* Улучшаем отображение результатов */
+        .question-text {
+          font-size: 1.1rem !important;
+        }
+      }
+
+      /* Для планшетов */
+      @media (min-width: 481px) and (max-width: 768px) {
+        .container {
+          padding: 15px;
+        }
+
+        .option-item {
+          padding: 12px !important;
+        }
+      }
+
+      /* Оптимизация для темной темы */
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #1a1a1a;
+          color: #f0f0f0;
+        }
+
+        .upload-section,
+        .result-section,
+        .question-card {
+          background-color: #2d2d2d !important;
+          color: #f0f0f0;
+        }
+
+        .option-item {
+          background-color: #3d3d3d !important;
+          border-color: #555 !important;
+          color: #f0f0f0;
+        }
+
+        input[type="file"] {
+          background-color: #3d3d3d;
+          color: #f0f0f0;
+          border-color: #8a9bb3;
+        }
+      }
+
+      /* Улучшения для вертикальной ориентации на мобильных */
+      @media (max-height: 600px) and (orientation: landscape) {
+        .container {
+          padding: 5px;
+        }
+
+        header {
+          padding: 10px;
+          margin-bottom: 15px;
+        }
+
+        .upload-section,
+        .result-section {
+          padding: 15px;
+          margin-bottom: 15px;
+        }
+      }
+
+      /* Предотвращаем выделение при касании на iOS */
+      * {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+      }
+
+      /* Улучшаем скролл на мобильных */
+      html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      /* Улучшаем видимость состояния фокуса для доступности */
+      button:focus,
+      input:focus {
+        outline: 2px solid #8a9bb3;
+        outline-offset: 2px;
+      }
+
+      /* Стили для улучшенного загрузчика файлов */
+      .file-upload-container {
+        position: relative;
+        margin-bottom: 8px;
+      }
+
+      .file-upload-container input[type="file"] {
+        width: 100%;
+        padding: 12px 100px 12px 15px;
+        border: 2px dashed #8a9bb3;
+        border-radius: 8px;
+        background-color: rgba(138, 155, 179, 0.05);
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+      }
+
+      .file-upload-container input[type="file"]:hover {
+        border-color: #d4b483;
+        background-color: rgba(212, 180, 131, 0.05);
+        box-shadow: 0 2px 8px rgba(138, 155, 179, 0.2);
+      }
+
+      .file-upload-container input[type="file"]:focus {
+        outline: none;
+        border-color: #6a7b93;
+        box-shadow: 0 0 0 3px rgba(138, 155, 179, 0.3);
+      }
+
+      .upload-hint {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        background: #8a9bb3;
+        color: white;
+        padding: 6px 16px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .file-upload-container:hover .upload-hint {
+        background: #6a7b93;
+      }
+
+      .file-info {
+        font-size: 14px;
+        color: #6a7b93;
+        margin-top: 8px;
+        transition: all 0.3s ease;
+      }
+
+      .file-info span:first-child {
+        font-weight: 500;
+        color: #2c3e50;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Темная тема для загрузчика файлов */
+      @media (prefers-color-scheme: dark) {
+        .file-upload-container input[type="file"] {
+          border-color: #4a5568;
+          background-color: rgba(74, 85, 104, 0.2);
+          color: #e2e8f0;
+        }
+
+        .file-upload-container input[type="file"]:hover {
+          border-color: #ed8936;
+          background-color: rgba(237, 137, 54, 0.1);
+        }
+
+        .file-upload-container input[type="file"]:focus {
+          border-color: #8a9bb3;
+          box-shadow: 0 0 0 3px rgba(138, 155, 179, 0.3);
+        }
+
+        .upload-hint {
+          background: #4a5568;
+          color: #e2e8f0;
+        }
+
+        .file-upload-container:hover .upload-hint {
+          background: #6a7b93;
+        }
+
+        .file-info {
+          color: #a0aec0;
+        }
+
+        .file-info span:first-child {
+          color: #e2e8f0;
+        }
+      }
+
+      /* Адаптивность для мобильных */
+      @media (max-width: 768px) {
+        .file-upload-container input[type="file"] {
+          padding: 14px 90px 14px 12px;
+          font-size: 15px;
+        }
+
+        .upload-hint {
+          padding: 6px 14px;
+          font-size: 13px;
+          right: 12px;
+        }
+
+        .file-info {
+          font-size: 13px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .file-upload-container input[type="file"] {
+          padding: 12px 80px 12px 10px;
+          font-size: 14px;
+        }
+
+        .upload-hint {
+          padding: 5px 12px;
+          font-size: 12px;
+          right: 10px;
+        }
+      }
+
+      /* Стили для блока "Поделиться тестом" */
+      .share-section {
+        animation: slideDown 0.5s ease;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      #shareLink:focus {
+        outline: 2px solid #d4b483;
+        outline-offset: 2px;
+      }
+
+      #copyLinkBtn {
+        transition: all 0.3s ease;
+      }
+
+      #copyLinkBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(106, 123, 147, 0.3);
+      }
+
+      /* Темная тема для блока "Поделиться" */
+      @media (prefers-color-scheme: dark) {
+        .share-section div {
+          background: linear-gradient(
+            135deg,
+            rgba(74, 85, 104, 0.2) 0%,
+            rgba(45, 55, 72, 0.1) 100%
+          );
+          border-left-color: #ed8936;
+        }
+
+        #shareLink {
+          background-color: #2d3748;
+          color: #e2e8f0;
+          border-color: #4a5568;
+        }
+
+        #shareLink:focus {
+          border-color: #ed8936;
+          outline-color: #ed8936;
+        }
+      }
+
+      /* Адаптивность для блока с ссылками */
+      @media (max-width: 768px) {
+        #networkLinksContainer div {
+          flex-direction: column;
+          gap: 5px;
+        }
+
+        #networkLinksContainer input {
+          font-size: 12px;
+        }
+
+        #networkLinksContainer button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>📊 Генератор тестов из Excel</h1>
+        <p>Загрузите Excel-файл с вопросами и получите готовый тест</p>
+      </header>
+
+      <main>
+        <!-- Экран 1: Загрузка файла -->
+        <div id="uploadScreen" class="screen active">
+          <section class="upload-section">
+            <h2>Загрузка файла</h2>
+            <p>
+              Загрузите Excel-файл (.xlsx, .xls) с вопросами. Правильные ответы
+              должны быть выделены <strong>полужирным</strong> шрифтом.
+            </p>
+
+            <div class="form-group">
+              <label
+                for="excelFile"
+                style="
+                  display: block;
+                  margin-bottom: 12px;
+                  font-weight: 600;
+                  color: #2c3e50;
+                "
+              >
+                Выберите Excel-файл:
+              </label>
+
+              <div
+                class="file-upload-container"
+                style="position: relative; margin-bottom: 5px"
+              >
+                <input
+                  type="file"
+                  id="excelFile"
+                  name="excelFile"
+                  accept=".xlsx, .xls"
+                  style="
+                    width: 100%;
+                    padding: 12px;
+                    border: 2px dashed #8a9bb3;
+                    border-radius: 8px;
+                    background-color: rgba(138, 155, 179, 0.05);
+                    cursor: pointer;
+                    font-size: 16px;
+                    transition: all 0.3s ease;
+                  "
+                />
+
+                <div
+                  class="upload-hint"
+                  style="
+                    position: absolute;
+                    right: 15px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    pointer-events: none;
+                    background: #8a9bb3;
+                    color: white;
+                    padding: 4px 12px;
+                    border-radius: 4px;
+                    font-size: 14px;
+                  "
+                >
+                  Выбрать
+                </div>
+              </div>
+
+              <div
+                class="file-info"
+                id="fileInfo"
+                style="
+                  font-size: 14px;
+                  color: #6a7b93;
+                  margin-top: 8px;
+                  display: none;
+                "
+              >
+                <span id="fileName">Файл не выбран</span>
+                <span id="fileSize" style="margin-left: 10px"></span>
+              </div>
+            </div>
+
+            <button
+              id="uploadButton"
+              style="
+                width: 100%;
+                margin-top: 20px;
+                padding: 16px;
+                font-size: 1.1rem;
+                font-weight: 600;
+                background: linear-gradient(135deg, #d4b483 0%, #c19d6b 100%);
+                color: white;
+                border: none;
+                border-radius: 10px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 12px rgba(212, 180, 131, 0.2);
+              "
+            >
+              📤 Загрузить и начать тест
+            </button>
+
+            <div class="loading" id="loading">
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  gap: 10px;
+                "
+              >
+                <div
+                  class="spinner"
+                  style="
+                    width: 24px;
+                    height: 24px;
+                    border: 3px solid rgba(138, 155, 179, 0.3);
+                    border-top-color: #8a9bb3;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                  "
+                ></div>
+                <span>Обработка файла, пожалуйста подождите...</span>
+              </div>
+            </div>
+
+            <div class="error" id="errorMessage"></div>
+          </section>
+        </div>
+
+        <!-- Экран 2: Тестирование -->
+        <div id="testScreen" class="screen">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 20px;
+            "
+          >
+            <h2>📝 Тестирование</h2>
+            <button
+              id="backButton"
+              style="
+                background: linear-gradient(135deg, #8a9bb3 0%, #6a7b93 100%);
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-size: 0.9rem;
+              "
+            >
+              ← Загрузить другой файл
+            </button>
+          </div>
+
+          <section class="result-section" id="resultSection">
+            <div
+              style="
+                margin-bottom: 20px;
+                padding: 15px;
+                background: rgba(138, 155, 179, 0.1);
+                border-radius: 10px;
+                border-left: 4px solid #8a9bb3;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  flex-wrap: wrap;
+                "
+              >
+                <div>
+                  <strong>Файл:</strong>
+                  <span id="currentFileName">Не выбран</span>
+                </div>
+                <div>
+                  <strong>Вопросов:</strong>
+                  <span id="totalQuestions">0</span> |
+                  <strong>Текущий:</strong>
+                  <span id="currentQuestion">1</span>/<span id="totalQuestions2"
+                    >0</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Блок для ссылки на тест -->
+            <!-- Блок для ссылки на тест -->
+            <div
+              class="share-section"
+              id="shareSection"
+              style="display: none; margin-bottom: 30px"
+            >
+              <div
+                style="
+                  background: linear-gradient(
+                    135deg,
+                    rgba(138, 155, 179, 0.1) 0%,
+                    rgba(212, 180, 131, 0.05) 100%
+                  );
+                  padding: 20px;
+                  border-radius: 12px;
+                  border-left: 4px solid #d4b483;
+                "
+              >
+                <h3 style="margin-top: 0; color: #2c3e50">
+                  📤 Поделиться тестом
+                </h3>
+                <p style="margin-bottom: 15px; color: #4a5568">
+                  Отправьте ссылку, чтобы другие могли пройти тест без загрузки
+                  файла:
+                </p>
+
+                <!-- Ссылка для этого компьютера -->
+                <div style="margin-bottom: 20px">
+                  <p
+                    style="margin-bottom: 8px; font-weight: 600; color: #2c3e50"
+                  >
+                    Для этого компьютера:
+                  </p>
+                  <div style="display: flex; gap: 10px; margin-bottom: 10px">
+                    <input
+                      type="text"
+                      id="localLink"
+                      readonly
+                      style="
+                        flex: 1;
+                        padding: 12px;
+                        border: 2px solid #8a9bb3;
+                        border-radius: 8px;
+                        font-size: 14px;
+                        background: white;
+                      "
+                    />
+                    <button
+                      id="copyLocalLinkBtn"
+                      style="
+                        padding: 12px 24px;
+                        background: linear-gradient(
+                          135deg,
+                          #8a9bb3 0%,
+                          #6a7b93 100%
+                        );
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-weight: 600;
+                      "
+                    >
+                      Копировать
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Ссылки для других устройств -->
+                <!-- Ссылки для других устройств -->
+                <div id="networkLinksSection">
+                  <p
+                    style="margin-bottom: 8px; font-weight: 600; color: #2c3e50"
+                  >
+                    Для телефона/других устройств:
+                  </p>
+
+                  <!-- Автоматически найденные IP-адреса -->
+                  <div id="networkLinksContainer">
+                    <!-- Сетевые ссылки будут добавлены сюда -->
+                  </div>
+
+                  <!-- Ручной ввод IP-адреса -->
+                  <div
+                    style="
+                      margin-top: 15px;
+                      padding: 15px;
+                      background: rgba(138, 155, 179, 0.05);
+                      border-radius: 8px;
+                    "
+                  >
+                    <p
+                      style="
+                        margin-bottom: 8px;
+                        font-weight: 600;
+                        color: #2c3e50;
+                      "
+                    >
+                      Если не работает, введите IP вручную:
+                    </p>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px">
+                      <input
+                        type="text"
+                        id="manualIP"
+                        placeholder="192.168.x.x"
+                        style="
+                          flex: 1;
+                          padding: 12px;
+                          border: 2px solid #d4b483;
+                          border-radius: 8px;
+                          font-size: 14px;
+                        "
+                      />
+                      <button
+                        id="generateManualLinkBtn"
+                        style="
+                          padding: 12px 24px;
+                          background: linear-gradient(
+                            135deg,
+                            #d4b483 0%,
+                            #c19d6b 100%
+                          );
+                          color: white;
+                          border: none;
+                          border-radius: 8px;
+                          cursor: pointer;
+                          font-weight: 600;
+                        "
+                      >
+                        Создать ссылку
+                      </button>
+                    </div>
+                    <div id="manualLinkContainer" style="display: none">
+                      <div style="display: flex; gap: 10px; margin-top: 10px">
+                        <input
+                          type="text"
+                          id="manualLink"
+                          readonly
+                          style="
+                            flex: 1;
+                            padding: 12px;
+                            border: 2px solid #8a9bb3;
+                            border-radius: 8px;
+                            font-size: 14px;
+                            background: white;
+                          "
+                        />
+                        <button
+                          id="copyManualLinkBtn"
+                          style="
+                            padding: 12px 24px;
+                            background: linear-gradient(
+                              135deg,
+                              #8a9bb3 0%,
+                              #6a7b93 100%
+                            );
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-weight: 600;
+                          "
+                        >
+                          Копировать
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Инструкция -->
+                  <div
+                    style="
+                      margin-top: 15px;
+                      padding: 12px;
+                      background: rgba(212, 180, 131, 0.1);
+                      border-radius: 8px;
+                      font-size: 13px;
+                    "
+                  >
+                    <p style="margin: 0; color: #2c3e50">
+                      <strong>Как узнать IP-адрес:</strong>
+                    </p>
+                    <ol
+                      style="margin: 8px 0 0 15px; padding: 0; color: #4a5568"
+                    >
+                      <li>На компьютере нажмите <strong>Win + R</strong></li>
+                      <li>Введите <code>cmd</code> и нажмите Enter</li>
+                      <li>
+                        В черном окне введите <code>ipconfig</code> и нажмите
+                        Enter
+                      </li>
+                      <li>Найдите строку <strong>IPv4-адрес</strong></li>
+                    </ol>
+                  </div>
+                </div>
+
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    color: #6a7b93;
+                    font-size: 14px;
+                    margin-top: 15px;
+                  "
+                >
+                  <span>🔗 Ссылка действительна 24 часа</span>
+                  <span style="margin-left: auto"
+                    >📅 Создан: <span id="testCreated"></span
+                  ></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Блок с одним вопросом -->
+            <div class="question-display" id="questionDisplay">
+              <!-- Здесь будет показываться один вопрос -->
+            </div>
+
+            <!-- Навигация -->
+            <div
+              class="navigation"
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-top: 20px;
+              "
+            >
+              <button id="prevButton" style="display: none">
+                ← Предыдущий
+              </button>
+              <button id="nextButton">Следующий →</button>
+            </div>
+
+            <!-- Результат -->
+            <div style="margin-top: 30px">
+              <button
+                id="checkButton"
+                style="
+                  background-color: #cccccc;
+                  cursor: not-allowed;
+                  width: 100%;
+                  padding: 15px;
+                  font-size: 1.1rem;
+                  font-weight: 600;
+                "
+                disabled
+              >
+                Ответьте на все вопросы для проверки (0/0)
+              </button>
+              <div
+                id="testResult"
+                style="
+                  display: none;
+                  margin-top: 20px;
+                  padding: 15px;
+                  border-radius: 5px;
+                "
+              ></div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer style="text-align: center; margin-top: 40px; color: #8a9bb3">
+        <p>Приложение использует цветовую палитру Pantone 2025 года</p>
+      </footer>
+    </div>
+
+    <script>
+      // ========== ФУНКЦИИ ДЛЯ КОРРЕКЦИИ КОДИРОВКИ ==========
+      function fixEncoding(str) {
+        if (!str) return str;
+
+        // Пробуем декодировать строку, которая была искажена (UTF-8 -> Latin1)
+        try {
+          // Если строка содержит признаки искаженной кириллицы
+          if (str.includes("Ð") || str.includes("Ñ")) {
+            // Пробуем исправить кодировку
+            return decodeURIComponent(escape(str));
+          }
+
+          // Пробуем декодировать как URL-encoded строку
+          if (str.includes("%")) {
+            try {
+              return decodeURIComponent(str);
+            } catch (e) {
+              // Если не получается, возвращаем как есть
+            }
+          }
+
+          return str;
+        } catch (e) {
+          console.error("Ошибка при исправлении кодировки:", e);
+          return str;
+        }
+      }
+
+      // Инициализация при загрузке DOM
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("DOM загружен, инициализируем кнопки...");
+        initCopyButtons();
+      });
+
+      // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
+      let allQuestions = [];
+      let currentQuestionIndex = 0;
+      let userAnswers = {};
+
+      // ========== ФУНКЦИИ ДЛЯ КОПИРОВАНИЯ ==========
+      async function copyToClipboard(text, buttonElement) {
+        console.log("Попытка копирования:", text);
+
+        try {
+          // Пробуем современный Clipboard API
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+            console.log("Успешно скопировано через Clipboard API");
+            showCopySuccess(buttonElement);
+            return true;
+          } else {
+            // Fallback для старых браузеров
+            return fallbackCopyToClipboard(text, buttonElement);
+          }
+        } catch (err) {
+          console.error("Ошибка при копировании через Clipboard API:", err);
+          // Пробуем fallback метод
+          return fallbackCopyToClipboard(text, buttonElement);
+        }
+      }
+
+      // Fallback метод для копирования
+      function fallbackCopyToClipboard(text, buttonElement) {
+        console.log("Используем fallback метод");
+
+        // Создаем временный textarea
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+
+        // Делаем textarea невидимой
+        textArea.style.position = "fixed";
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.width = "2em";
+        textArea.style.height = "2em";
+        textArea.style.padding = "0";
+        textArea.style.border = "none";
+        textArea.style.outline = "none";
+        textArea.style.boxShadow = "none";
+        textArea.style.background = "transparent";
+
+        document.body.appendChild(textArea);
+
+        try {
+          // Выделяем текст
+          textArea.select();
+          textArea.setSelectionRange(0, 99999); // Для мобильных устройств
+
+          // Пробуем скопировать
+          const successful = document.execCommand("copy");
+
+          if (successful) {
+            console.log("Успешно скопировано через execCommand");
+            showCopySuccess(buttonElement);
+            document.body.removeChild(textArea);
+            return true;
+          } else {
+            console.warn("execCommand не удался");
+            showCopyManual(text, buttonElement);
+            document.body.removeChild(textArea);
+            return false;
+          }
+        } catch (err) {
+          console.error("Ошибка при использовании execCommand:", err);
+          showCopyManual(text, buttonElement);
+          document.body.removeChild(textArea);
+          return false;
+        }
+      }
+
+      // Показать сообщение о необходимости ручного копирования
+      function showCopyManual(text, buttonElement) {
+        if (!buttonElement) return;
+
+        const originalText = buttonElement.textContent;
+        const originalBackground = buttonElement.style.background;
+
+        // Показываем текст для копирования
+        buttonElement.textContent = "Скопировать вручную";
+        buttonElement.style.background =
+          "linear-gradient(135deg, #ff9800 0%, #f57c00 100%)";
+
+        // При нажатии показываем текст
+        const tempClickListener = () => {
+          alert(`Скопируйте эту ссылку:\n\n${text}`);
+          buttonElement.removeEventListener("click", tempClickListener);
+        };
+
+        buttonElement.addEventListener("click", tempClickListener);
+
+        setTimeout(() => {
+          buttonElement.textContent = originalText;
+          buttonElement.style.background = originalBackground;
+          buttonElement.removeEventListener("click", tempClickListener);
+        }, 3000);
+      }
+
+      // Показать успех копирования
+      function showCopySuccess(buttonElement) {
+        if (!buttonElement) return;
+
+        const originalText = buttonElement.textContent;
+        const originalBackground = buttonElement.style.background;
+
+        buttonElement.textContent = "✓ Скопировано!";
+        buttonElement.style.background =
+          "linear-gradient(135deg, #4caf50 0%, #2e7d32 100%)";
+        buttonElement.style.cursor = "default";
+
+        setTimeout(() => {
+          buttonElement.textContent = originalText;
+          buttonElement.style.background = originalBackground;
+          buttonElement.style.cursor = "pointer";
+        }, 2000);
+      }
+
+      // ========== ИНИЦИАЛИЗАЦИЯ КНОПОК КОПИРОВАНИЯ ==========
+      function initCopyButtons() {
+        console.log("Инициализация кнопок копирования...");
+
+        // 1. Локальная ссылка
+        const localCopyBtn = document.getElementById("copyLocalLinkBtn");
+        if (localCopyBtn) {
+          localCopyBtn.addEventListener("click", async function () {
+            const linkInput = document.getElementById("localLink");
+            if (linkInput && linkInput.value) {
+              await copyToClipboard(linkInput.value, this);
+            } else {
+              console.error("Не найден localLink или его значение");
+              alert("Нет ссылки для копирования");
+            }
+          });
+        }
+
+        // 2. Ручная ссылка
+        const copyManualBtn = document.getElementById("copyManualLinkBtn");
+        if (copyManualBtn) {
+          copyManualBtn.addEventListener("click", async function () {
+            const linkInput = document.getElementById("manualLink");
+            if (linkInput && linkInput.value) {
+              await copyToClipboard(linkInput.value, this);
+            } else {
+              alert("Сначала создайте ссылку");
+            }
+          });
+        }
+
+        // 3. Динамические кнопки сетевых ссылок (делегирование событий)
+        document.addEventListener("click", async function (e) {
+          if (
+            e.target &&
+            e.target.classList &&
+            e.target.classList.contains("copyNetworkLinkBtn")
+          ) {
+            const link = e.target.getAttribute("data-link");
+            if (link) {
+              console.log("Копируем сетевую ссылку:", link);
+              await copyToClipboard(link, e.target);
+            }
+          }
+        });
+
+        // 4. Кнопка генерации ручной ссылки
+        const generateBtn = document.getElementById("generateManualLinkBtn");
+        if (generateBtn) {
+          generateBtn.addEventListener("click", function () {
+            const ipInput = document.getElementById("manualIP");
+            const linkContainer = document.getElementById(
+              "manualLinkContainer"
+            );
+            const linkInput = document.getElementById("manualLink");
+
+            if (!ipInput || !ipInput.value) {
+              alert("Введите IP-адрес");
+              return;
+            }
+
+            const ip = ipInput.value.trim();
+            // Простая проверка IP
+            if (!/^\d{1,3}(\.\d{1,3}){3}$/.test(ip)) {
+              alert("Введите корректный IP-адрес (например: 192.168.1.100)");
+              return;
+            }
+
+            if (window.currentTestId) {
+              const link = `http://${ip}:5000/test/${window.currentTestId}`;
+              linkInput.value = link;
+              linkContainer.style.display = "block";
+              console.log("Создана ручная ссылка:", link);
+
+              // Прокручиваем к созданной ссылке
+              linkContainer.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            } else {
+              alert("Сначала загрузите тест");
+            }
+          });
+        }
+
+        console.log("Кнопки копирования инициализированы");
+      }
+
+      // ========== УПРАВЛЕНИЕ ЭКРАНАМИ ==========
+      function showUploadScreen() {
+        document.getElementById("uploadScreen").classList.add("active");
+        document.getElementById("testScreen").classList.remove("active");
+
+        document.getElementById("excelFile").value = "";
+        document.getElementById("fileInfo").style.display = "none";
+        document.getElementById("fileName").textContent = "Файл не выбран";
+        document.getElementById("fileSize").textContent = "";
+
+        document.getElementById("testResult").style.display = "none";
+        document.getElementById("testResult").innerHTML = "";
+      }
+
+      function showTestScreen() {
+        document.getElementById("uploadScreen").classList.remove("active");
+        document.getElementById("testScreen").classList.add("active");
+      }
+
+      // ========== ОБРАБОТКА ФАЙЛОВ ==========
+      document
+        .getElementById("excelFile")
+        .addEventListener("change", function (e) {
+          const fileInfo = document.getElementById("fileInfo");
+          const fileName = document.getElementById("fileName");
+          const fileSize = document.getElementById("fileSize");
+
+          if (this.files && this.files[0]) {
+            const file = this.files[0];
+            fileName.textContent = fixEncoding(file.name);
+
+            const size = file.size;
+            let sizeText = "";
+            if (size < 1024) {
+              sizeText = size + " Б";
+            } else if (size < 1024 * 1024) {
+              sizeText = (size / 1024).toFixed(1) + " КБ";
+            } else {
+              sizeText = (size / (1024 * 1024)).toFixed(1) + " МБ";
+            }
+            fileSize.textContent = "(" + sizeText + ")";
+
+            fileInfo.style.display = "block";
+          } else {
+            fileName.textContent = "Файл не выбран";
+            fileSize.textContent = "";
+            fileInfo.style.display = "none";
+          }
+        });
+
+      document
+        .getElementById("uploadButton")
+        .addEventListener("click", function () {
+          const fileInput = document.getElementById("excelFile");
+          const file = fileInput.files[0];
+
+          console.log("Кнопка нажата, файл:", file);
+
+          if (!file) {
+            showError("Пожалуйста, выберите файл");
+            return;
+          }
+
+          const allowedExtensions = [".xlsx", ".xls"];
+          const fileExtension = file.name
+            .substring(file.name.lastIndexOf("."))
+            .toLowerCase();
+
+          if (!allowedExtensions.includes(fileExtension)) {
+            showError("Пожалуйста, выберите Excel файл (.xlsx или .xls)");
+            return;
+          }
+
+          document.getElementById("loading").style.display = "block";
+          document.getElementById("errorMessage").style.display = "none";
+
+          const formData = new FormData();
+          formData.append("excelFile", file);
+
+          fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => {
+              console.log("Ответ получен:", response.status);
+              if (!response.ok) {
+                throw new Error("Сервер ответил ошибкой: " + response.status);
+              }
+              return response.json();
+            })
+            .then((data) => {
+              console.log("Данные от сервера:", data);
+              document.getElementById("loading").style.display = "none";
+
+              if (data.success) {
+                // Исправляем кодировку имени файла
+                const fileName = fixEncoding(data.originalname);
+                document.getElementById("currentFileName").textContent =
+                  fileName;
+                showTestScreen();
+                document.getElementById("shareSection").style.display = "block";
+                document.getElementById("testCreated").textContent =
+                  new Date().toLocaleString("ru-RU");
+                window.currentTestId = data.testId;
+                document.getElementById("localLink").value = data.localLink;
+
+                const networkLinksContainer = document.getElementById(
+                  "networkLinksContainer"
+                );
+                networkLinksContainer.innerHTML = "";
+
+                if (data.networkLinks && data.networkLinks.length > 0) {
+                  data.networkLinks.forEach((link, index) => {
+                    const linkDiv = document.createElement("div");
+                    linkDiv.style.cssText =
+                      "display: flex; gap: 10px; margin-bottom: 10px;";
+
+                    linkDiv.innerHTML = `
+                            <input type="text" value="${link}" readonly
+                                   style="flex: 1; padding: 12px; border: 2px solid #8a9bb3;
+                                          border-radius: 8px; font-size: 14px; background: white;">
+                            <button class="copyNetworkLinkBtn" data-link="${link}"
+                                    style="padding: 12px 24px; background: linear-gradient(135deg, #8a9bb3 0%, #6a7b93 100%);
+                                           color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                Копировать
+                            </button>
+                        `;
+                    networkLinksContainer.appendChild(linkDiv);
+                  });
+                } else {
+                  networkLinksContainer.innerHTML =
+                    '<p style="color: #666; font-style: italic;">Нет доступных сетевых адресов</p>';
+                }
+
+                document.getElementById("resultSection").style.display =
+                  "block";
+                document.getElementById("totalQuestions").textContent =
+                  data.total;
+                document.getElementById("totalQuestions2").textContent =
+                  data.total;
+                document.getElementById("currentQuestion").textContent = "1";
+
+                displayQuestions(data.questions);
+              } else {
+                showError(data.message || "Ошибка при загрузке файла");
+              }
+            })
+            .catch((error) => {
+              console.error("Ошибка:", error);
+              document.getElementById("loading").style.display = "none";
+              showError("Ошибка: " + error.message);
+            });
+        });
+
+      // ========== ТЕСТИРОВАНИЕ ==========
+      function displayQuestions(questions) {
+        allQuestions = questions;
+        currentQuestionIndex = 0;
+        userAnswers = {};
+
+        document.getElementById("totalQuestions").textContent =
+          questions.length;
+        document.getElementById("totalQuestions2").textContent =
+          questions.length;
+        document.getElementById("currentQuestion").textContent = "1";
+
+        showQuestion(currentQuestionIndex);
+        updateCheckButton();
+      }
+
+      function showQuestion(index) {
+        const question = allQuestions[index];
+        const container = document.getElementById("questionDisplay");
+
+        document.getElementById("currentQuestion").textContent = index + 1;
+
+        document.getElementById("prevButton").style.display =
+          index === 0 ? "none" : "block";
+        document.getElementById("nextButton").style.display =
+          index === allQuestions.length - 1 ? "none" : "block";
+
+        let optionsHtml = '<div class="options-list">';
+        question.options.forEach((option, optionIndex) => {
+          const questionId = question.id || index;
+          const isChecked =
+            userAnswers[questionId] &&
+            userAnswers[questionId].includes(optionIndex);
+
+          optionsHtml += `
+            <div class="option-item" style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox"
+                           data-question="${questionId}"
+                           data-option="${optionIndex}"
+                           ${isChecked ? "checked" : ""}
+                           style="margin-right: 10px; transform: scale(1.2);">
+                    <span>${option.text}</span>
+                </label>
+            </div>
+        `;
+        });
+        optionsHtml += "</div>";
+
+        container.innerHTML = `
+        <div class="question-card" style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+            <div class="question-text" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 20px; color: #2c3e50;">
+                ${index + 1}. ${question.text}
+            </div>
+            ${optionsHtml}
+            <p style="margin-top: 15px; color: #666; font-size: 0.9rem;">
+                <strong>Можно выбрать несколько ответов</strong>, если вопрос допускает это
+            </p>
+        </div>
+    `;
+
+        container
+          .querySelectorAll('input[type="checkbox"]')
+          .forEach((checkbox) => {
+            checkbox.addEventListener("change", function () {
+              const questionId = this.getAttribute("data-question");
+              const optionIndex = parseInt(this.getAttribute("data-option"));
+
+              if (!userAnswers[questionId]) {
+                userAnswers[questionId] = [];
+              }
+
+              if (this.checked) {
+                if (!userAnswers[questionId].includes(optionIndex)) {
+                  userAnswers[questionId].push(optionIndex);
+                }
+              } else {
+                userAnswers[questionId] = userAnswers[questionId].filter(
+                  (i) => i !== optionIndex
+                );
+              }
+
+              if (
+                userAnswers[questionId] &&
+                userAnswers[questionId].length === 0
+              ) {
+                delete userAnswers[questionId];
+              }
+
+              updateCheckButton();
+            });
+          });
+      }
+
+      document
+        .getElementById("prevButton")
+        .addEventListener("click", function () {
+          if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            showQuestion(currentQuestionIndex);
+          }
+        });
+
+      document
+        .getElementById("nextButton")
+        .addEventListener("click", function () {
+          if (currentQuestionIndex < allQuestions.length - 1) {
+            currentQuestionIndex++;
+            showQuestion(currentQuestionIndex);
+          }
+        });
+
+      function updateCheckButton() {
+        const checkButton = document.getElementById("checkButton");
+        const totalQuestions = allQuestions.length;
+
+        if (totalQuestions === 0) {
+          checkButton.disabled = true;
+          checkButton.style.backgroundColor = "#cccccc";
+          checkButton.style.cursor = "not-allowed";
+          checkButton.textContent = `Ответьте на все вопросы для проверки (0/0)`;
+          return;
+        }
+
+        let answeredCount = 0;
+        for (let i = 0; i < totalQuestions; i++) {
+          const questionId = allQuestions[i].id || i;
+          if (userAnswers[questionId] && userAnswers[questionId].length > 0) {
+            answeredCount++;
+          }
+        }
+
+        const allAnswered = answeredCount === totalQuestions;
+
+        if (allAnswered) {
+          checkButton.disabled = false;
+          checkButton.style.backgroundColor = "#4caf50";
+          checkButton.style.cursor = "pointer";
+          checkButton.textContent = `Проверить мои ответы ✓ (${answeredCount}/${totalQuestions})`;
+        } else {
+          checkButton.disabled = true;
+          checkButton.style.backgroundColor = "#cccccc";
+          checkButton.style.cursor = "not-allowed";
+          checkButton.textContent = `Ответьте на все вопросы для проверки (${answeredCount}/${totalQuestions})`;
+        }
+      }
+
+      function canCheckAnswers() {
+        const totalQuestions = allQuestions.length;
+        if (totalQuestions === 0) return false;
+
+        for (let i = 0; i < totalQuestions; i++) {
+          const questionId = allQuestions[i].id || i;
+          if (
+            !userAnswers[questionId] ||
+            userAnswers[questionId].length === 0
+          ) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      document
+        .getElementById("checkButton")
+        .addEventListener("click", function () {
+          if (!canCheckAnswers()) {
+            alert("Пожалуйста, ответьте на все вопросы перед проверкой!");
+            return;
+          }
+          checkAnswers();
+        });
+
+      function checkAnswers() {
+        let correctCount = 0;
+        let totalQuestions = allQuestions.length;
+        let resultHtml = "";
+
+        allQuestions.forEach((question, index) => {
+          const questionId = question.id || index;
+          const userSelected = userAnswers[questionId] || [];
+          const correctOptions = [];
+
+          question.options.forEach((option, optionIndex) => {
+            if (option.isCorrect) {
+              correctOptions.push(optionIndex);
+            }
+          });
+
+          const isCorrect =
+            userSelected.length === correctOptions.length &&
+            userSelected.every((opt) => correctOptions.includes(opt));
+
+          if (isCorrect) {
+            correctCount++;
+          }
+
+          resultHtml += `
+            <div style="margin: 10px 0; padding: 10px; border-left: 4px solid ${
+              isCorrect ? "#4caf50" : "#f44336"
+            }; background: #f9f9f9;">
+                <strong>Вопрос ${index + 1}:</strong> ${question.text}<br>
+                <span style="color: ${isCorrect ? "#4caf50" : "#f44336"}">
+                    ${isCorrect ? "✓ Правильно!" : "✗ Неправильно"}
+                </span>
+            </div>
+        `;
+        });
+
+        const score = Math.round((correctCount / totalQuestions) * 100);
+        const resultDiv = document.getElementById("testResult");
+
+        resultDiv.innerHTML = `
+        <h3 style="color: #2c3e50;">Результат теста</h3>
+        <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+            <div style="font-size: 2rem; color: ${
+              score >= 70 ? "#4caf50" : score >= 50 ? "#ff9800" : "#f44336"
+            }; font-weight: bold;">
+                ${score}%
+            </div>
+            <p>Правильных ответов: ${correctCount} из ${totalQuestions}</p>
+            <div style="margin-top: 20px;">
+                <h4>Детали:</h4>
+                ${resultHtml}
+            </div>
+            <button onclick="location.reload()" style="margin-top: 20px; background-color: #8a9bb3; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                Пройти тест снова
+            </button>
+        </div>
+    `;
+
+        resultDiv.style.display = "block";
+        resultDiv.scrollIntoView({ behavior: "smooth" });
+      }
+
+      // ========== ЗАГРУЗКА ПО ССЫЛКЕ ==========
+      function loadTestByLink(testId) {
+        console.log("=== НАЧАЛО ЗАГРУЗКИ ТЕСТА ПО ССЫЛКЕ ===");
+        console.log("ID теста для загрузки:", testId);
+
+        document.getElementById("loading").style.display = "block";
+        document.getElementById("loading").innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <div class="spinner" style="width: 24px; height: 24px; border: 3px solid rgba(138, 155, 179, 0.3);
+                 border-top-color: #8a9bb3; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <span>Загрузка теста по ссылке...</span>
+        </div>
+    `;
+
+        fetch(`/api/test/${testId}`)
+          .then((response) => {
+            console.log("Ответ от сервера получен");
+            console.log("Статус ответа:", response.status);
+
+            if (!response.ok) {
+              throw new Error("Сервер ответил ошибкой: " + response.status);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Данные от API:", data);
+            document.getElementById("loading").style.display = "none";
+
+            if (data.success) {
+              console.log("✅ Тест успешно загружен!");
+              const fileName = fixEncoding(data.originalname);
+              document.getElementById("currentFileName").textContent =
+                fileName + " (по ссылке)";
+              data.originalname + " (по ссылке)";
+              showTestScreen();
+              document.getElementById("shareSection").style.display = "none";
+              document.getElementById("backButton").style.display = "none";
+              document.getElementById("resultSection").style.display = "block";
+              document.getElementById("totalQuestions").textContent =
+                data.total;
+              document.getElementById("totalQuestions2").textContent =
+                data.total;
+              document.getElementById("currentQuestion").textContent = "1";
+              displayQuestions(data.questions);
+              window.currentTestId = testId;
+            } else {
+              console.log("❌ Ошибка от сервера:", data.message);
+              showError(data.message || "Не удалось загрузить тест");
+              showUploadScreen();
+            }
+          })
+          .catch((error) => {
+            document.getElementById("loading").style.display = "none";
+            console.error("❌ Ошибка загрузки теста:", error);
+
+            let errorMessage = "Ошибка загрузки теста. ";
+            if (error.message.includes("Failed to fetch")) {
+              errorMessage += "Проверьте подключение к серверу.";
+            } else {
+              errorMessage += error.message;
+            }
+
+            showError(errorMessage);
+            showUploadScreen();
+          });
+      }
+
+      // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+      function showError(message) {
+        const errorDiv = document.getElementById("errorMessage");
+        if (errorDiv) {
+          errorDiv.textContent = message;
+          errorDiv.style.display = "block";
+
+          setTimeout(() => {
+            errorDiv.style.display = "none";
+          }, 5000);
+        } else {
+          console.error("Ошибка:", message);
+          alert(message);
+        }
+      }
+
+      // ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
+      document
+        .getElementById("backButton")
+        .addEventListener("click", function () {
+          if (confirm("Вы уверены? Текущий прогресс теста будет потерян.")) {
+            showUploadScreen();
+          }
+        });
+
+      document
+        .getElementById("copyLocalLinkBtn")
+        .addEventListener("click", function () {
+          const linkInput = document.getElementById("localLink");
+          if (linkInput && linkInput.value) {
+            copyToClipboard(linkInput.value, this);
+          } else {
+            alert("Нет ссылки для копирования");
+          }
+        });
+
+      document
+        .getElementById("generateManualLinkBtn")
+        .addEventListener("click", function () {
+          const ipInput = document.getElementById("manualIP");
+          const linkContainer = document.getElementById("manualLinkContainer");
+          const linkInput = document.getElementById("manualLink");
+
+          if (!ipInput || !ipInput.value) {
+            alert("Введите IP-адрес");
+            return;
+          }
+
+          const ip = ipInput.value.trim();
+          if (!/^\d{1,3}(\.\d{1,3}){3}$/.test(ip)) {
+            alert("Введите корректный IP-адрес (например: 192.168.1.100)");
+            return;
+          }
+
+          if (window.currentTestId) {
+            const link = `http://${ip}:5000/test/${window.currentTestId}`;
+            linkInput.value = link;
+            linkContainer.style.display = "block";
+            console.log("Создана ручная ссылка:", link);
+          } else {
+            alert("Сначала загрузите тест");
+          }
+        });
+
+      document
+        .getElementById("copyManualLinkBtn")
+        .addEventListener("click", function () {
+          const linkInput = document.getElementById("manualLink");
+          if (linkInput && linkInput.value) {
+            copyToClipboard(linkInput.value, this);
+          } else {
+            alert("Сначала создайте ссылку");
+          }
+        });
+
+      document.addEventListener("click", function (e) {
+        if (
+          e.target &&
+          e.target.classList &&
+          e.target.classList.contains("copyNetworkLinkBtn")
+        ) {
+          const link = e.target.getAttribute("data-link");
+          if (link) {
+            console.log("Копируем сетевую ссылку:", link);
+            copyToClipboard(link, e.target);
+          }
+        }
+      });
+
+      // ========== ИНИЦИАЛИЗАЦИЯ ==========
+      window.onload = function () {
+        console.log("=== ПАРАМЕТРЫ СТРАНИЦЫ ===");
+        console.log("Полный URL:", window.location.href);
+        console.log("Путь (pathname):", window.location.pathname);
+
+        const path = window.location.pathname;
+
+        if (path.startsWith("/test/")) {
+          const testId = path.split("/test/")[1];
+          console.log("✅ Найдена ссылка на тест!");
+          console.log("ID теста:", testId);
+
+          if (testId && testId.length > 5) {
+            console.log("Загружаем тест по ссылке...");
+            loadTestByLink(testId);
+            return;
+          } else {
+            console.log("❌ ID теста слишком короткий или не найден");
+          }
+        } else {
+          console.log("ℹ️ Это обычная страница, показываем экран загрузки");
+        }
+
+        console.log("Показываем экран загрузки файла");
+        showUploadScreen();
+      };
+    </script>
+  </body>
+</html>

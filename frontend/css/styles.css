@@ -1,0 +1,611 @@
+      /* Стили для экранов */
+      .screen {
+        display: none;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .screen.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Улучшаем кнопку возврата */
+      #backButton {
+        background: linear-gradient(135deg, #8a9bb3 0%, #6a7b93 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      #backButton:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(106, 123, 147, 0.3);
+      }
+
+      /* Темная тема для кнопки возврата */
+      @media (prefers-color-scheme: dark) {
+        #backButton {
+          background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+        }
+
+        #backButton:hover {
+          box-shadow: 0 4px 12px rgba(74, 85, 104, 0.3);
+        }
+      }
+
+      /* Адаптивность для кнопки возврата */
+      @media (max-width: 768px) {
+        #backButton {
+          padding: 10px 16px;
+          font-size: 14px;
+          margin-top: 10px;
+        }
+
+        .screen.active {
+          padding-top: 10px;
+        }
+      }
+
+      /* Информационная панель в тесте */
+      #resultSection > div:first-child {
+        margin-bottom: 25px;
+        padding: 20px;
+        background: linear-gradient(
+          135deg,
+          rgba(138, 155, 179, 0.1) 0%,
+          rgba(212, 180, 131, 0.05) 100%
+        );
+        border-radius: 12px;
+        border-left: 4px solid #8a9bb3;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #resultSection > div:first-child {
+          background: linear-gradient(
+            135deg,
+            rgba(74, 85, 104, 0.2) 0%,
+            rgba(45, 55, 72, 0.1) 100%
+          );
+          border-left-color: #4a5568;
+        }
+      }
+
+      /* Базовые стили */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #1a2b3c; /* Pantone 2025: Deep Teal (глубокий сине-зеленый) */
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        min-height: 100vh;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      header {
+        background: linear-gradient(
+          135deg,
+          #6a7b93 0%,
+          #8a9bb3 100%
+        ); /* Pantone 2025: Misty Blue */
+        color: white;
+        padding: 25px;
+        text-align: center;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 20px rgba(106, 123, 147, 0.2);
+      }
+
+      .upload-section,
+      .result-section {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+        border: 1px solid rgba(212, 180, 131, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .upload-section:hover,
+      .result-section:hover {
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+      }
+
+      button {
+        background: linear-gradient(
+          135deg,
+          #d4b483 0%,
+          #c19d6b 100%
+        ); /* Pantone 2025: Peach Pink персиково-розовый */
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        font-size: 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(212, 180, 131, 0.3);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 10px;
+        }
+
+        h1 {
+          font-size: 1.8rem;
+        }
+
+        .upload-section,
+        .result-section {
+          padding: 20px;
+        }
+      }
+
+      /* Новые улучшения для всего приложения */
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        background: linear-gradient(
+          135deg,
+          #ffffff 0%,
+          #d4b483 50%,
+          #8a9bb3 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 700;
+      }
+
+      h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid rgba(212, 180, 131, 0.3);
+      }
+
+      p {
+        color: #4a5568;
+        margin-bottom: 15px;
+      }
+
+      /* Улучшаем чекбоксы */
+      .option-item {
+        margin: 10px 0;
+        padding: 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+      }
+
+      .option-item:hover {
+        border-color: #8a9bb3;
+        transform: translateX(5px);
+      }
+
+      .option-item input[type="checkbox"]:checked ~ span {
+        color: #2c3e50;
+        font-weight: 600;
+      }
+
+      .option-item input[type="checkbox"]:checked ~ .option-item {
+        border-color: #d4b483;
+        background-color: rgba(212, 180, 131, 0.1);
+      }
+
+      /* Улучшаем индикатор загрузки */
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 30px;
+        color: #8a9bb3;
+      }
+
+      .loading:before {
+        content: "";
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+        border: 3px solid rgba(138, 155, 179, 0.3);
+        border-radius: 50%;
+        border-top-color: #8a9bb3;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Улучшаем ошибки */
+      .error {
+        color: #c53030;
+        padding: 15px;
+        background-color: #fff5f5;
+        border-radius: 8px;
+        margin-top: 15px;
+        display: none;
+        border-left: 4px solid #c53030;
+      }
+
+      /* Темная тема для ошибки */
+      @media (prefers-color-scheme: dark) {
+        .error {
+          background-color: #2d3748;
+          color: #fc8181;
+          border-left-color: #fc8181;
+        }
+
+        h2 {
+          color: #e2e8f0;
+          border-bottom-color: #4a5568;
+        }
+
+        p {
+          color: #a0aec0;
+        }
+      }
+
+      /* Улучшения для мобильных устройств */
+      @media (max-width: 480px) {
+        /* Уменьшаем отступы на очень маленьких экранах */
+        .container {
+          padding: 10px;
+        }
+
+        h1 {
+          font-size: 1.8rem;
+        }
+
+        h2 {
+          font-size: 1.4rem;
+        }
+
+        /* Улучшаем кнопки для касания */
+        button,
+        input[type="file"] {
+          padding: 15px;
+          font-size: 16px; /* Предотвращает масштабирование в iOS */
+        }
+
+        /* Увеличиваем область касания для чекбоксов */
+        .option-item {
+          padding: 15px !important;
+          margin: 12px 0 !important;
+        }
+
+        .option-item label {
+          font-size: 16px;
+        }
+
+        /* Улучшаем навигацию */
+        .navigation button {
+          padding: 12px 15px;
+          font-size: 16px;
+          width: 48%;
+        }
+
+        /* Улучшаем отображение результатов */
+        .question-text {
+          font-size: 1.1rem !important;
+        }
+      }
+
+      /* Для планшетов */
+      @media (min-width: 481px) and (max-width: 768px) {
+        .container {
+          padding: 15px;
+        }
+
+        .option-item {
+          padding: 12px !important;
+        }
+      }
+
+      /* Оптимизация для темной темы */
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #1a1a1a;
+          color: #f0f0f0;
+        }
+
+        .upload-section,
+        .result-section,
+        .question-card {
+          background-color: #2d2d2d !important;
+          color: #f0f0f0;
+        }
+
+        .option-item {
+          background-color: #3d3d3d !important;
+          border-color: #555 !important;
+          color: #f0f0f0;
+        }
+
+        input[type="file"] {
+          background-color: #3d3d3d;
+          color: #f0f0f0;
+          border-color: #8a9bb3;
+        }
+      }
+
+      /* Улучшения для вертикальной ориентации на мобильных */
+      @media (max-height: 600px) and (orientation: landscape) {
+        .container {
+          padding: 5px;
+        }
+
+        header {
+          padding: 10px;
+          margin-bottom: 15px;
+        }
+
+        .upload-section,
+        .result-section {
+          padding: 15px;
+          margin-bottom: 15px;
+        }
+      }
+
+      /* Предотвращаем выделение при касании на iOS */
+      * {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+      }
+
+      /* Улучшаем скролл на мобильных */
+      html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      /* Улучшаем видимость состояния фокуса для доступности */
+      button:focus,
+      input:focus {
+        outline: 2px solid #8a9bb3;
+        outline-offset: 2px;
+      }
+
+      /* Стили для улучшенного загрузчика файлов */
+      .file-upload-container {
+        position: relative;
+        margin-bottom: 8px;
+      }
+
+      .file-upload-container input[type="file"] {
+        width: 100%;
+        padding: 12px 100px 12px 15px;
+        border: 2px dashed #8a9bb3;
+        border-radius: 8px;
+        background-color: rgba(138, 155, 179, 0.05);
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+      }
+
+      .file-upload-container input[type="file"]:hover {
+        border-color: #d4b483;
+        background-color: rgba(212, 180, 131, 0.05);
+        box-shadow: 0 2px 8px rgba(138, 155, 179, 0.2);
+      }
+
+      .file-upload-container input[type="file"]:focus {
+        outline: none;
+        border-color: #6a7b93;
+        box-shadow: 0 0 0 3px rgba(138, 155, 179, 0.3);
+      }
+
+      .upload-hint {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        background: #8a9bb3;
+        color: white;
+        padding: 6px 16px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .file-upload-container:hover .upload-hint {
+        background: #6a7b93;
+      }
+
+      .file-info {
+        font-size: 14px;
+        color: #6a7b93;
+        margin-top: 8px;
+        transition: all 0.3s ease;
+      }
+
+      .file-info span:first-child {
+        font-weight: 500;
+        color: #2c3e50;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Темная тема для загрузчика файлов */
+      @media (prefers-color-scheme: dark) {
+        .file-upload-container input[type="file"] {
+          border-color: #4a5568;
+          background-color: rgba(74, 85, 104, 0.2);
+          color: #e2e8f0;
+        }
+
+        .file-upload-container input[type="file"]:hover {
+          border-color: #ed8936;
+          background-color: rgba(237, 137, 54, 0.1);
+        }
+
+        .file-upload-container input[type="file"]:focus {
+          border-color: #8a9bb3;
+          box-shadow: 0 0 0 3px rgba(138, 155, 179, 0.3);
+        }
+
+        .upload-hint {
+          background: #4a5568;
+          color: #e2e8f0;
+        }
+
+        .file-upload-container:hover .upload-hint {
+          background: #6a7b93;
+        }
+
+        .file-info {
+          color: #a0aec0;
+        }
+
+        .file-info span:first-child {
+          color: #e2e8f0;
+        }
+      }
+
+      /* Адаптивность для мобильных */
+      @media (max-width: 768px) {
+        .file-upload-container input[type="file"] {
+          padding: 14px 90px 14px 12px;
+          font-size: 15px;
+        }
+
+        .upload-hint {
+          padding: 6px 14px;
+          font-size: 13px;
+          right: 12px;
+        }
+
+        .file-info {
+          font-size: 13px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .file-upload-container input[type="file"] {
+          padding: 12px 80px 12px 10px;
+          font-size: 14px;
+        }
+
+        .upload-hint {
+          padding: 5px 12px;
+          font-size: 12px;
+          right: 10px;
+        }
+      }
+
+      /* Стили для блока "Поделиться тестом" */
+      .share-section {
+        animation: slideDown 0.5s ease;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      #shareLink:focus {
+        outline: 2px solid #d4b483;
+        outline-offset: 2px;
+      }
+
+      #copyLinkBtn {
+        transition: all 0.3s ease;
+      }
+
+      #copyLinkBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(106, 123, 147, 0.3);
+      }
+
+      /* Темная тема для блока "Поделиться" */
+      @media (prefers-color-scheme: dark) {
+        .share-section div {
+          background: linear-gradient(
+            135deg,
+            rgba(74, 85, 104, 0.2) 0%,
+            rgba(45, 55, 72, 0.1) 100%
+          );
+          border-left-color: #ed8936;
+        }
+
+        #shareLink {
+          background-color: #2d3748;
+          color: #e2e8f0;
+          border-color: #4a5568;
+        }
+
+        #shareLink:focus {
+          border-color: #ed8936;
+          outline-color: #ed8936;
+        }
+      }
+
+      /* Адаптивность для блока с ссылками */
+      @media (max-width: 768px) {
+        #networkLinksContainer div {
+          flex-direction: column;
+          gap: 5px;
+        }
+
+        #networkLinksContainer input {
+          font-size: 12px;
+        }
+
+        #networkLinksContainer button {
+          width: 100%;
+        }
+      }

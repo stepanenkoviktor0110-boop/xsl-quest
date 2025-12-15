@@ -1,0 +1,13 @@
+{
+  "name": "xsl-quest",
+  "version": "1.0.0",
+  "description": "Генератор тестов из Excel",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "dev": "cd backend && npm run dev",
+    "install-backend": "cd backend && npm install"
+  },
+  "keywords": ["excel", "test", "generator"],
+  "author": "",
+  "license": "ISC"
+}

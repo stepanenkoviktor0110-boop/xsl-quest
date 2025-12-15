@@ -1,0 +1,11 @@
+const MAX_TESTS_IN_MEMORY = 200;
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const CLEANUP_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
+const TEST_EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 24 hours
+
+module.exports = {
+  MAX_TESTS_IN_MEMORY,
+  MAX_FILE_SIZE,
+  CLEANUP_INTERVAL,
+  TEST_EXPIRATION_TIME,
+};
