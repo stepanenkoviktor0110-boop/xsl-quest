@@ -48,10 +48,26 @@ async function uploadTest(req, res) {
     addTest(testData);
     cleanupOldTests();
 
-    const testLinks = serverIPs.map(
-      (ip) => `http://${ip}:${PORT}/test/${testId}`
-    );
-    const localLink = `http://localhost:${PORT}/test/${testId}`;
+    // Определяем базовый URL в зависимости от окружения
+    const host = req.get('host');
+    const protocol = req.protocol; // 'http' или 'https'
+    const baseUrl = `${protocol}://${host}`;
+
+    // Основная ссылка (работает везде)
+    const mainLink = `${baseUrl}/test/${testId}`;
+
+    // Локальные ссылки (только для локальной разработки)
+    const testLinks = [];
+    const localLink = host.includes('localhost') ? `http://localhost:${PORT}/test/${testId}` : mainLink;
+
+    if (host.includes('localhost')) {
+      // Если локально - добавляем сетевые IP
+      testLinks.push(...serverIPs.map((ip) => `http://${ip}:${PORT}/test/${testId}`));
+    } else {
+      // Если на продакшене - только основная ссылка
+      testLinks.push(mainLink);
+    }
+
     const networkLinks = testLinks.filter(
       (link) => !link.includes("localhost")
     );
@@ -63,6 +79,7 @@ async function uploadTest(req, res) {
       testLinks,
       localLink,
       networkLinks,
+      mainLink, // Добавляем основную ссылку
       originalname: originalnameFixed,
       total: questions.length,
       questions,
