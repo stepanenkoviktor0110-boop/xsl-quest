@@ -1728,7 +1728,7 @@
                 <h4>Детали:</h4>
                 ${resultHtml}
             </div>
-            <button onclick="location.reload()" style="margin-top: 20px; background-color: #8a9bb3; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+            <button onclick="retakeTest()" style="margin-top: 20px; background-color: #8a9bb3; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
                 Пройти тест снова
             </button>
         </div>
@@ -1818,6 +1818,25 @@
         } else {
           console.error("Ошибка:", message);
           alert(message);
+        }
+      }
+
+      function retakeTest() {
+        // Очищаем результаты
+        document.getElementById("testResult").style.display = "none";
+        document.getElementById("testResult").innerHTML = "";
+
+        // Сбрасываем ответы пользователя
+        userAnswers = {};
+
+        // Перезагружаем тест
+        if (allQuestions && allQuestions.length > 0) {
+          currentQuestionIndex = 0;
+          showQuestion(currentQuestionIndex);
+          document.getElementById("testContainer").scrollIntoView({ behavior: "smooth" });
+        } else {
+          // Если теста нет в памяти - перезагружаем страницу
+          location.reload();
         }
       }
 
