@@ -12,6 +12,9 @@ const PORT = process.env.PORT || 5000;
 
 const app = express();
 
+// Trust proxy для корректной работы за Render proxy
+app.set('trust proxy', true);
+
 app.use(requestLogger);
 
 app.use(
