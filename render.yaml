@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: xsl-quest
+    runtime: node
+    buildCommand: cd backend && npm install
+    startCommand: node backend/server.js
+    envVars:
+      - key: NODE_VERSION
+        value: 18.18.0
