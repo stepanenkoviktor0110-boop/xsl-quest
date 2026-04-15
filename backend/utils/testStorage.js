@@ -69,6 +69,7 @@ function toPublicTest(testData) {
       text: q.text,
       options: q.options.map((o) => ({
         text: o.text,
+        isCorrect: !!o.isCorrect,
       })),
     })),
   };

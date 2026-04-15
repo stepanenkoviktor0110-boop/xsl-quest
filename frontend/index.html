@@ -1833,7 +1833,10 @@
         if (allQuestions && allQuestions.length > 0) {
           currentQuestionIndex = 0;
           showQuestion(currentQuestionIndex);
-          document.getElementById("testContainer").scrollIntoView({ behavior: "smooth" });
+          const el =
+            document.getElementById("questionDisplay") ||
+            document.getElementById("resultSection");
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
         } else {
           // Если теста нет в памяти - перезагружаем страницу
           location.reload();
